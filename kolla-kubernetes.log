@@ -1,0 +1,118 @@
+# kubeadm init --pod-network-cidr=10.1.0.0/16 --service-cidr=10.3.3.0/24
+[kubeadm] WARNING: kubeadm is in beta, please do not use it for production clusters.
+[init] Using Kubernetes version: v1.8.3
+[init] Using Authorization modes: [Node RBAC]
+[preflight] Running pre-flight checks
+[preflight] WARNING: Running with swap on is not supported. Please disable swap or set kubelet's --fail-swap-on flag to false.
+[preflight] Starting the kubelet service
+[kubeadm] WARNING: starting in 1.8, tokens expire after 24 hours by default (if you require a non-expiring token use --token-ttl 0)
+[certificates] Generated ca certificate and key.
+[certificates] Generated apiserver certificate and key.
+[certificates] apiserver serving cert is signed for DNS names [mmmm kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.3.3.1 10.0.3.15]
+[certificates] Generated apiserver-kubelet-client certificate and key.
+[certificates] Generated sa key and public key.
+[certificates] Generated front-proxy-ca certificate and key.
+[certificates] Generated front-proxy-client certificate and key.
+[certificates] Valid certificates and keys now exist in "/etc/kubernetes/pki"
+[kubeconfig] Wrote KubeConfig file to disk: "admin.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "kubelet.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "controller-manager.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "scheduler.conf"
+[controlplane] Wrote Static Pod manifest for component kube-apiserver to "/etc/kubernetes/manifests/kube-apiserver.yaml"
+[controlplane] Wrote Static Pod manifest for component kube-controller-manager to "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+[controlplane] Wrote Static Pod manifest for component kube-scheduler to "/etc/kubernetes/manifests/kube-scheduler.yaml"
+[etcd] Wrote Static Pod manifest for a local etcd instance to "/etc/kubernetes/manifests/etcd.yaml"
+[init] Waiting for the kubelet to boot up the control plane as Static Pods from directory "/etc/kubernetes/manifests"
+[init] This often takes around a minute; or longer if the control plane images have to be pulled.
+[apiclient] All control plane components are healthy after 31.007630 seconds
+[uploadconfig] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[markmaster] Will mark node mmmm as master by adding a label and a taint
+[markmaster] Master mmmm tainted and labelled with key/value: node-role.kubernetes.io/master=""
+[bootstraptoken] Using token: 91df31.6e1c241becf03864
+[bootstraptoken] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstraptoken] Configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstraptoken] Configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstraptoken] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[addons] Applied essential addon: kube-dns
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes master has initialized successfully!
+
+To start using your cluster, you need to run (as a regular user):
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  http://kubernetes.io/docs/admin/addons/
+
+You can now join any number of machines by running the following on each node
+as root:
+
+  kubeadm join --token 91df31.6e1c241becf03864 10.0.3.15:6443 --discovery-token-ca-cert-hash sha256:e34e6d0aa0dda43705c3aaecdc8602ddbee95051e08781c7730ce4d231d4787c
+
+# exit
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                           READY     STATUS    RESTARTS   AGE
+kube-system   etcd-mmmm                      1/1       Running   0          16m
+kube-system   kube-apiserver-mmmm            1/1       Running   0          16m
+kube-system   kube-controller-manager-mmmm   1/1       Running   0          16m
+kube-system   kube-dns-545bc4bfd4-n2rd2      0/3       Pending   0          17m
+kube-system   kube-proxy-ns974               1/1       Running   0          17m
+kube-system   kube-scheduler-mmmm            1/1       Running   0          16m
+
+=========== a seperate teriminal begin ============
+Every 2.0s: kubectl get pods --all-namespaces -o wide                                                   Fri Nov 17 11:13:29 2017
+
+NAMESPACE     NAME                           READY     STATUS             RESTARTS   AGE       IP          NODE
+kube-system   canal-8m7hl                    2/3       CrashLoopBackOff   14         51m       10.0.3.15   mmmm
+kube-system   etcd-mmmm                      1/1       Running            0          1h        10.0.3.15   ming
+kube-system   kube-apiserver-mmmm            1/1       Running            0          1h        10.0.3.15   ming
+kube-system   kube-controller-manager-mmmm   1/1       Running            0          1h        10.0.3.15   ming
+kube-system   kube-dns-545bc4bfd4-n2rd2      3/3       Running            0          1h        10.1.0.2    mmmm
+kube-system   kube-proxy-ns974               1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-scheduler-mmmm            1/1       Running            0          1h        10.0.3.15   ming
+??? Questions:
+* why pod ip address is not in the range specified in kubeadm
+=========== a seperate teriminal end   ============
+
+$ curl -L https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.6/rbac.yaml -o rbac.yaml
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  2568  100  2568    0     0   9663      0 --:--:-- --:--:-- --:--:--  9690
+$ kubectl apply -f rbac.yaml
+clusterrole "calico" created
+clusterrole "flannel" created
+clusterrolebinding "canal-flannel" created
+clusterrolebinding "canal-calico" created
+$ curl -L https://raw.githubusercontent.com/projectcalico/canal/master/k8s-install/1.6/canal.yaml -o canal.yaml
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  7043  100  7043    0     0  32694      0 --:--:-- --:--:-- --:--:-- 32758
+$ sed -i "s@10.244.0.0/16@10.1.0.0/16@" canal.yaml
+$ vim canal.yaml 
+$ kubectl apply -f canal.yaml
+configmap "canal-config" created
+daemonset "canal" created
+serviceaccount "canal" created
+$ kubectl taint nodes --all=true  node-role.kubernetes.io/master:NoSchedule-
+node "mmmm" untainted
+
+$ kubectl run -i -t $(uuidgen) --image=busybox --restart=Never
+If you don't see a command prompt, try pressing enter.
+/ # ls
+bin   dev   etc   home  proc  root  sys   tmp   usr   var
+/ # nslookup kubernetes
+Server:    10.3.3.10
+Address 1: 10.3.3.10 kube-dns.kube-system.svc.cluster.local
+
+Name:      kubernetes
+Address 1: 10.3.3.1 kubernetes.default.svc.cluster.local
+/ # exit
+
