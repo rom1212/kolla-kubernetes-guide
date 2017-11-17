@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo kubeadm init --pod-network-cidr=10.1.0.0/16 --service-cidr=10.3.3.0/24
 
 mkdir -p $HOME/.kube

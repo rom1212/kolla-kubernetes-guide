@@ -72,12 +72,12 @@ Every 2.0s: kubectl get pods --all-namespaces -o wide                           
 
 NAMESPACE     NAME                           READY     STATUS             RESTARTS   AGE       IP          NODE
 kube-system   canal-8m7hl                    2/3       CrashLoopBackOff   14         51m       10.0.3.15   mmmm
-kube-system   etcd-mmmm                      1/1       Running            0          1h        10.0.3.15   ming
-kube-system   kube-apiserver-mmmm            1/1       Running            0          1h        10.0.3.15   ming
-kube-system   kube-controller-manager-mmmm   1/1       Running            0          1h        10.0.3.15   ming
+kube-system   etcd-mmmm                      1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-apiserver-mmmm            1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-controller-manager-mmmm   1/1       Running            0          1h        10.0.3.15   mmmm
 kube-system   kube-dns-545bc4bfd4-n2rd2      3/3       Running            0          1h        10.1.0.2    mmmm
 kube-system   kube-proxy-ns974               1/1       Running            0          1h        10.0.3.15   mmmm
-kube-system   kube-scheduler-mmmm            1/1       Running            0          1h        10.0.3.15   ming
+kube-system   kube-scheduler-mmmm            1/1       Running            0          1h        10.0.3.15   mmmm
 ??? Questions:
 * why pod ip address is not in the range specified in kubeadm
 =========== a seperate teriminal end   ============
@@ -115,4 +115,51 @@ Address 1: 10.3.3.10 kube-dns.kube-system.svc.cluster.local
 Name:      kubernetes
 Address 1: 10.3.3.1 kubernetes.default.svc.cluster.local
 / # exit
+
+
+=========== a seperate teriminal begin ============
+Every 2.0s: kubectl get pods --all-namespaces -o wide                                                   Fri Nov 17 11:38:42 2017
+
+NAMESPACE     NAME                           READY     STATUS             RESTARTS   AGE       IP          NODE
+kube-system   canal-8m7hl                    2/3       CrashLoopBackOff   18         1h        10.0.3.15   mmmm
+kube-system   etcd-mmmm                      1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-apiserver-mmmm            1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-controller-manager-mmmm   1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-dns-545bc4bfd4-n2rd2      3/3       Running            0          1h        10.1.0.2    mmmm
+kube-system   kube-proxy-ns974               1/1       Running            0          1h        10.0.3.15   mmmm
+kube-system   kube-scheduler-mmmm            1/1       Running            0          1h        10.0.3.15   mmmm
+=========== a seperate teriminal end   ============
+
+
+~/kolla-kubernetes-guide$ kubectl apply -f override-defalt-rbac-settings.yaml 
+Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+clusterrolebinding "cluster-admin" configured
+
+
++ curl -L https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  6329  100  6329    0     0  23025      0 --:--:-- --:--:-- --:--:-- 23098
++ chmod 700 get_helm.sh
++ ./get_helm.sh
+Downloading https://kubernetes-helm.storage.googleapis.com/helm-v2.7.2-linux-amd64.tar.gz
+Preparing to install into /usr/local/bin
+[sudo] password for mingzhao: 
+helm installed into /usr/local/bin/helm
+Run 'helm init' to configure helm.
++ helm init
+Creating /home/mingzhao/.helm 
+Creating /home/mingzhao/.helm/repository 
+Creating /home/mingzhao/.helm/repository/cache 
+Creating /home/mingzhao/.helm/repository/local 
+Creating /home/mingzhao/.helm/plugins 
+Creating /home/mingzhao/.helm/starters 
+Creating /home/mingzhao/.helm/cache/archive 
+Creating /home/mingzhao/.helm/repository/repositories.yaml 
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com 
+Adding local repo with URL: http://127.0.0.1:8879/charts 
+$HELM_HOME has been configured at /home/mingzhao/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+Happy Helming!
 
